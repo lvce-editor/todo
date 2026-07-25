@@ -6,7 +6,7 @@ import type {
   VirtualDomViewInstance,
 } from '@lvce-editor/api'
 import { expect, test } from '@jest/globals'
-import { VirtualDomElements } from '@lvce-editor/virtual-dom-worker'
+import { AriaRoles, VirtualDomElements } from '@lvce-editor/virtual-dom-worker'
 import type { ActiveTrelloViewInstance } from '../src/parts/CreateInstance/CreateInstance.ts'
 import type { TrelloClient } from '../src/parts/TrelloClient/TrelloClient.ts'
 import type { TrelloImageCache } from '../src/parts/TrelloImageCache/TrelloImageCache.ts'
@@ -1274,43 +1274,65 @@ test('board overview context menu opens board menu', async () => {
   resetTrelloViewDependencyFactory()
 })
 
-test('renderActions returns no actions before authentication', async () => {
+test('renderActionsDom returns no actions before authentication', async () => {
   setTrelloViewDependencyFactory(() => ({
     client: createMockTrelloClient({ boards: [] }),
     recentStorage: createMemoryRecentBoardStorage(),
     storage: createMemoryCredentialStorage(),
   }))
   const instance = (await view.create()) as VirtualDomViewInstance & {
-    readonly renderActions: () => readonly unknown[]
+    readonly renderActionsDom: () => readonly unknown[]
   }
 
-  expect(instance.renderActions()).toEqual([])
+  expect(instance.renderActionsDom()).toEqual([])
   resetTrelloViewDependencyFactory()
 })
 
-test('renderActions returns board list actions', async () => {
+test('renderActionsDom returns board list actions', async () => {
   const instance = (await createAuthenticatedInstance([
     { id: 'board-1', name: 'Roadmap' },
   ])) as VirtualDomViewInstance & {
-    readonly renderActions: () => readonly unknown[]
+    readonly renderActionsDom: () => readonly unknown[]
   }
 
-  expect(instance.renderActions()).toEqual([
+  expect(instance.renderActionsDom()).toEqual([
     {
-      command: 'trello.refreshBoards',
-      icon: 'Refresh',
-      title: 'Refresh Boards',
+      childCount: 2,
+      className: 'Actions',
+      role: AriaRoles.ToolBar,
+      type: VirtualDomElements.Div,
     },
     {
-      command: 'trello.logout',
-      icon: 'Account',
+      childCount: 1,
+      className: 'IconButton',
+      'data-command': 'trello.refreshBoards',
+      title: 'Refresh Boards',
+      type: VirtualDomElements.Button,
+    },
+    {
+      childCount: 0,
+      className: 'MaskIcon MaskIconRefresh',
+      role: AriaRoles.None,
+      type: VirtualDomElements.Div,
+    },
+    {
+      childCount: 1,
+      className: 'IconButton',
+      'data-command': 'trello.logout',
       title: 'Sign Out',
+      type: VirtualDomElements.Button,
+    },
+    {
+      childCount: 0,
+      className: 'MaskIcon MaskIconAccount',
+      role: AriaRoles.None,
+      type: VirtualDomElements.Div,
     },
   ])
   resetTrelloViewDependencyFactory()
 })
 
-test('renderActions returns board detail actions', async () => {
+test('renderActionsDom returns board detail actions', async () => {
   const instance = (await createAuthenticatedInstance(
     [{ id: 'board-1', name: 'Roadmap' }],
     [],
@@ -1323,26 +1345,56 @@ test('renderActions returns board detail actions', async () => {
       },
     },
   )) as VirtualDomViewInstance & {
-    readonly renderActions: () => readonly unknown[]
+    readonly renderActionsDom: () => readonly unknown[]
   }
 
   await instance.handleEvent?.({ name: 'board:board-1', type: 'click' })
 
-  expect(instance.renderActions()).toEqual([
+  expect(instance.renderActionsDom()).toEqual([
     {
-      command: 'trello.backToBoards',
-      icon: 'ArrowLeft',
+      childCount: 3,
+      className: 'Actions',
+      role: AriaRoles.ToolBar,
+      type: VirtualDomElements.Div,
+    },
+    {
+      childCount: 1,
+      className: 'IconButton',
+      'data-command': 'trello.backToBoards',
       title: 'Back to Boards',
+      type: VirtualDomElements.Button,
     },
     {
-      command: 'trello.refreshBoards',
-      icon: 'Refresh',
+      childCount: 0,
+      className: 'MaskIcon MaskIconArrowLeft',
+      role: AriaRoles.None,
+      type: VirtualDomElements.Div,
+    },
+    {
+      childCount: 1,
+      className: 'IconButton',
+      'data-command': 'trello.refreshBoards',
       title: 'Refresh Boards',
+      type: VirtualDomElements.Button,
     },
     {
-      command: 'trello.logout',
-      icon: 'Account',
+      childCount: 0,
+      className: 'MaskIcon MaskIconRefresh',
+      role: AriaRoles.None,
+      type: VirtualDomElements.Div,
+    },
+    {
+      childCount: 1,
+      className: 'IconButton',
+      'data-command': 'trello.logout',
       title: 'Sign Out',
+      type: VirtualDomElements.Button,
+    },
+    {
+      childCount: 0,
+      className: 'MaskIcon MaskIconAccount',
+      role: AriaRoles.None,
+      type: VirtualDomElements.Div,
     },
   ])
   resetTrelloViewDependencyFactory()
