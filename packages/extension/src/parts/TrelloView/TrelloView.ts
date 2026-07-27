@@ -40,6 +40,7 @@ export const view: TrelloView = {
 }
 
 export {
+  readCardDetailPopupEnabledPreference,
   resetTrelloViewDependencyFactory,
   setTrelloViewDependencyFactory,
 } from '../DependencyFactory/DependencyFactory.ts'
@@ -63,6 +64,7 @@ export { getMenuEntries } from '../MenuEntries/MenuEntries.ts'
 export { renderActionsDom } from '../RenderActionsDom/RenderActionsDom.ts'
 export {
   boardBackgroundEnabledPreference,
+  cardDetailPopupEnabledPreference,
   searchEnabledPreference,
   viewId,
 } from '../Constants/Constants.ts'
