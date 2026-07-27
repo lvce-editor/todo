@@ -5,7 +5,7 @@ import {
   boardBackgroundEnabledPreference,
   searchEnabledPreference,
 } from '../Constants/Constants.ts'
-import { createCacheCredentialStorage } from '../CredentialStorage/CredentialStorage.ts'
+import { createSecretCredentialStorage } from '../CredentialStorage/CredentialStorage.ts'
 import { createCacheCurrentBoardStorage } from '../CurrentBoardStorage/CurrentBoardStorage.ts'
 import { createCacheRecentBoardStorage } from '../RecentBoardStorage/RecentBoardStorage.ts'
 import { createTrelloClient } from '../TrelloClient/TrelloClient.ts'
@@ -43,7 +43,7 @@ const defaultDependencyFactory = (): TrelloViewDependencies => ({
   readBoardBackgroundEnabled: readBoardBackgroundEnabledPreference,
   readSearchEnabled: readSearchEnabledPreference,
   recentStorage: createCacheRecentBoardStorage(),
-  storage: createCacheCredentialStorage(),
+  storage: createSecretCredentialStorage(ExtensionApi),
 })
 
 export const dependencyState: { factory: DependencyFactory } = {
