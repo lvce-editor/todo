@@ -13,6 +13,12 @@ interface TodoContent {
   readonly dom: readonly VirtualDomNode[]
 }
 
+const todoSummaryNode: VirtualDomNode = {
+  childCount: 1,
+  className: 'TodoSummary',
+  type: VirtualDomElements.Div,
+}
+
 export const renderTodoContent = (
   state: Readonly<TodoViewState>,
 ): TodoContent => {
@@ -49,11 +55,7 @@ export const renderTodoContent = (
   return {
     childCount: 2,
     dom: [
-      {
-        childCount: 1,
-        className: 'TodoSummary',
-        type: VirtualDomElements.Div,
-      },
+      todoSummaryNode,
       text(
         `${todos.length} ${todos.length === 1 ? 'todo' : 'todos'} in ${uniqueFiles} ${uniqueFiles === 1 ? 'file' : 'files'}.${suffix}`,
       ),

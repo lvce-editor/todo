@@ -77,7 +77,8 @@ export const createInstance = (
         return
       }
       const index = Math.trunc(Number(name.slice('todo:'.length)))
-      const todo = state.todos[index]
+      const { todos } = state
+      const todo = todos[index]
       if (!todo) {
         return
       }

@@ -28,7 +28,8 @@ const state = {
 export const activate = async (
   dependencies: Readonly<MainDependencies> = defaultDependencies,
 ): Promise<void> => {
-  if (state.activated) {
+  const { activated } = state
+  if (activated) {
     return
   }
   state.activated = true
