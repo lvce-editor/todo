@@ -5,7 +5,6 @@ import {
   registerView,
 } from '@lvce-editor/api'
 import { viewId } from '../Constants/Constants.ts'
-import { refreshActiveTodoViewInstances } from '../CreateInstance/CreateInstance.ts'
 import * as TodoView from '../TodoView/TodoView.ts'
 
 const state = {
@@ -24,12 +23,6 @@ export const activate = async (): Promise<void> => {
       return executeCommand('Layout.toggleSideBarView', viewId)
     },
     id: 'todo.show',
-  })
-  registerCommand({
-    execute() {
-      return refreshActiveTodoViewInstances()
-    },
-    id: 'todo.refresh',
   })
 }
 
