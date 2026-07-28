@@ -1,5 +1,5 @@
 import type { Test } from '@lvce-editor/test-with-playwright'
-import { createTodoWorkspaceAndShow } from './_todo.virtual-dom-view.shared.ts'
+import { createTodoWorkspaceAndShow } from './_todo.virtual-dom-view.shared.js'
 
 export const name = 'todo.virtual-dom-view.open-second-source'
 
