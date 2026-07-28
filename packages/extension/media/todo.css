@@ -1,5 +1,6 @@
 .TodoView {
   box-sizing: border-box;
+  contain: strict;
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -11,16 +12,19 @@
 
 .TodoMessage {
   color: var(--WorkbenchForeground, currentColor);
+  contain: content;
   padding: 16px 8px;
 }
 
 .TodoSummary {
   color: var(--WorkbenchSecondaryForeground, currentColor);
+  contain: content;
   font-size: 12px;
   padding: 4px 8px 8px;
 }
 
 .TodoList {
+  contain: content;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -30,6 +34,7 @@
 }
 
 .TodoListItem {
+  contain: content;
   margin: 0;
   min-width: 0;
 }
@@ -39,6 +44,7 @@
   border: 0;
   border-radius: 4px;
   color: var(--WorkbenchForeground, currentColor);
+  contain: content;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -62,6 +68,7 @@
 .TodoItemMain,
 .TodoLocation {
   align-items: baseline;
+  contain: content;
   display: flex;
   min-width: 0;
 }
@@ -73,6 +80,7 @@
 .TodoTag {
   border-radius: 3px;
   color: var(--BadgeForeground, currentColor);
+  contain: content;
   flex: none;
   font-size: 10px;
   font-weight: 700;
@@ -96,6 +104,7 @@
 
 .TodoText,
 .TodoPath {
+  contain: content;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -116,5 +125,6 @@
 }
 
 .TodoLine {
+  contain: content;
   flex: none;
 }
