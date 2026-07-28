@@ -9,17 +9,49 @@ import { getTodoLabel } from '../GetTodoLabel/GetTodoLabel.ts'
 
 const handleClick = 'handleClick'
 
+const todoListItemNode: VirtualDomNode = {
+  childCount: 1,
+  className: 'TodoListItem',
+  type: VirtualDomElements.Li,
+}
+
+const todoItemMainNode: VirtualDomNode = {
+  childCount: 2,
+  className: 'TodoItemMain',
+  type: VirtualDomElements.Div,
+}
+
+const todoTextNode: VirtualDomNode = {
+  childCount: 1,
+  className: 'TodoText',
+  type: VirtualDomElements.Span,
+}
+
+const todoLocationNode: VirtualDomNode = {
+  childCount: 2,
+  className: 'TodoLocation',
+  type: VirtualDomElements.Div,
+}
+
+const todoPathNode: VirtualDomNode = {
+  childCount: 1,
+  className: 'TodoPath',
+  type: VirtualDomElements.Span,
+}
+
+const todoLineNode: VirtualDomNode = {
+  childCount: 1,
+  className: 'TodoLine',
+  type: VirtualDomElements.Span,
+}
+
 export const renderTodo = (
   todo: Readonly<TodoItem>,
   index: number,
 ): readonly VirtualDomNode[] => {
   const description = todo.text || 'No description'
   return [
-    {
-      childCount: 1,
-      className: 'TodoListItem',
-      type: VirtualDomElements.Li,
-    },
+    todoListItemNode,
     {
       'aria-label': getTodoLabel(todo),
       childCount: 2,
@@ -29,39 +61,19 @@ export const renderTodo = (
       title: `${todo.path}:${todo.line}:${todo.column}`,
       type: VirtualDomElements.Button,
     },
-    {
-      childCount: 2,
-      className: 'TodoItemMain',
-      type: VirtualDomElements.Div,
-    },
+    todoItemMainNode,
     {
       childCount: 1,
       className: mergeClassNames('TodoTag', `TodoTag${todo.tag}`),
       type: VirtualDomElements.Span,
     },
     text(todo.tag),
-    {
-      childCount: 1,
-      className: 'TodoText',
-      type: VirtualDomElements.Span,
-    },
+    todoTextNode,
     text(description),
-    {
-      childCount: 2,
-      className: 'TodoLocation',
-      type: VirtualDomElements.Div,
-    },
-    {
-      childCount: 1,
-      className: 'TodoPath',
-      type: VirtualDomElements.Span,
-    },
+    todoLocationNode,
+    todoPathNode,
     text(todo.path),
-    {
-      childCount: 1,
-      className: 'TodoLine',
-      type: VirtualDomElements.Span,
-    },
+    todoLineNode,
     text(`Line ${todo.line}`),
   ]
 }

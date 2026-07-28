@@ -1,9 +1,15 @@
 import { expect, jest, test } from '@jest/globals'
-import { AriaRoles, VirtualDomElements } from '@lvce-editor/virtual-dom-worker'
+import {
+  AriaRoles,
+  mergeClassNames,
+  VirtualDomElements,
+} from '@lvce-editor/virtual-dom-worker'
 import {
   createInstance,
   type TodoInstanceDependencies,
 } from '../src/parts/CreateInstance/CreateInstance.ts'
+
+const handleClick = 'handleClick'
 
 const todo = {
   column: 4,
@@ -70,13 +76,13 @@ test('loads, renders, refreshes, and opens todos', async () => {
       className: 'IconButton',
       'data-command': 'todo.refresh',
       name: 'refresh',
-      onClick: 'handleClick',
+      onClick: handleClick,
       title: 'Refresh Todos',
       type: VirtualDomElements.Button,
     },
     {
       childCount: 0,
-      className: 'MaskIcon MaskIconRefresh',
+      className: mergeClassNames('MaskIcon', 'MaskIconRefresh'),
       role: AriaRoles.None,
       type: VirtualDomElements.Div,
     },

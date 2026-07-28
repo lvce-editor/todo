@@ -13,7 +13,8 @@ const state = {
 }
 
 export const activate = async (): Promise<void> => {
-  if (state.activated) {
+  const { activated } = state
+  if (activated) {
     return
   }
   state.activated = true
