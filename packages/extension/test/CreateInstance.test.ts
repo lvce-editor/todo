@@ -21,16 +21,18 @@ const todo = {
   uri: '/workspace/src/main.ts',
 }
 
+const scanResult = {
+  scannedFileCount: 1,
+  todos: [todo],
+  truncated: false,
+  workspace: '/workspace',
+}
+
 const createDependencies = (
   overrides: Partial<TodoInstanceDependencies> = {},
 ): TodoInstanceDependencies => ({
   openTodo: jest.fn(async () => {}),
-  scanTodos: jest.fn(async () => ({
-    scannedFileCount: 1,
-    todos: [todo],
-    truncated: false,
-    workspace: '/workspace',
-  })),
+  scanTodos: jest.fn(async () => scanResult),
   ...overrides,
 })
 
@@ -90,6 +92,100 @@ test('loads, renders, refreshes, and opens todos', async () => {
   ])
   expect(requestRerender).toHaveBeenCalled()
   instance.dispose?.()
+})
+
+test('keeps results visible when a refresh finishes within 500ms', async () => {
+  jest.useFakeTimers()
+  try {
+    const { promise: pendingScan, resolve: resolveScan } =
+      Promise.withResolvers<typeof scanResult>()
+    const scanTodos = jest.fn(async () => scanResult)
+    const requestRerender = jest.fn(async () => {})
+    const instance = createInstance(
+      {
+        requestRerender,
+        showContextMenu: jest.fn(async () => {}),
+        uid: 1,
+        viewId: 'todo.views.todos',
+      },
+      createDependencies({ scanTodos }),
+    )
+    await instance.refresh()
+    requestRerender.mockClear()
+    scanTodos.mockImplementationOnce(() => pendingScan)
+
+    const refreshPromise = instance.refresh()
+    await jest.advanceTimersByTimeAsync(499)
+
+    expect(requestRerender).not.toHaveBeenCalled()
+    expect(instance.render()).toEqual(
+      expect.arrayContaining([expect.objectContaining({ name: 'todo:0' })]),
+    )
+
+    resolveScan(scanResult)
+    await refreshPromise
+    await jest.advanceTimersByTimeAsync(1)
+
+    expect(requestRerender).toHaveBeenCalledTimes(1)
+    expect(instance.render()).toEqual(
+      expect.arrayContaining([expect.objectContaining({ name: 'todo:0' })]),
+    )
+    instance.dispose?.()
+  } finally {
+    jest.useRealTimers()
+  }
+})
+
+test('renders loading when a refresh takes at least 500ms', async () => {
+  jest.useFakeTimers()
+  try {
+    const { promise: pendingScan, resolve: resolveScan } =
+      Promise.withResolvers<typeof scanResult>()
+    const scanTodos = jest.fn(async () => scanResult)
+    const requestRerender = jest.fn(async () => {})
+    const instance = createInstance(
+      {
+        requestRerender,
+        showContextMenu: jest.fn(async () => {}),
+        uid: 1,
+        viewId: 'todo.views.todos',
+      },
+      createDependencies({ scanTodos }),
+    )
+    await instance.refresh()
+    requestRerender.mockClear()
+    scanTodos.mockImplementationOnce(() => pendingScan)
+
+    const refreshPromise = instance.refresh()
+    await jest.advanceTimersByTimeAsync(499)
+
+    expect(requestRerender).not.toHaveBeenCalled()
+    expect(instance.render()).toEqual(
+      expect.arrayContaining([expect.objectContaining({ name: 'todo:0' })]),
+    )
+
+    await jest.advanceTimersByTimeAsync(1)
+
+    expect(requestRerender).toHaveBeenCalledTimes(1)
+    expect(instance.render()).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          text: 'Scanning workspace for todo comments…',
+        }),
+      ]),
+    )
+
+    resolveScan(scanResult)
+    await refreshPromise
+
+    expect(requestRerender).toHaveBeenCalledTimes(2)
+    expect(instance.render()).toEqual(
+      expect.arrayContaining([expect.objectContaining({ name: 'todo:0' })]),
+    )
+    instance.dispose?.()
+  } finally {
+    jest.useRealTimers()
+  }
 })
 
 test('dispose removes the instance from file change refreshes', async () => {
