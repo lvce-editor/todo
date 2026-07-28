@@ -1,40 +1,44 @@
 import { expect, jest, test } from '@jest/globals'
-
-const activateExtensionApi = jest.fn(async () => {})
-const executeCommand = jest.fn(async (..._args: unknown[]) => {})
-const registerCommand = jest.fn()
-const registerView = jest.fn()
-
-jest.unstable_mockModule('@lvce-editor/api', () => ({
-  activate: activateExtensionApi,
-  executeCommand,
-  getWorkspaceUri: jest.fn(),
-  openUri: jest.fn(),
-  readDirWithFileTypes: jest.fn(),
-  readFile: jest.fn(),
-  registerCommand,
-  registerView,
-}))
-
-const { activate } = await import('../src/parts/Main/Main.ts')
-const { view } = await import('../src/parts/TodoView/TodoView.ts')
+import { activate, type MainDependencies } from '../src/parts/Main/Main.ts'
+import { view } from '../src/parts/TodoView/TodoView.ts'
 
 test('registers refresh only as a view command', async () => {
-  await activate()
-  await activate()
+  const activateExtensionApi = jest.fn<
+    MainDependencies['activateExtensionApi']
+  >(async () => {})
+  const executeCommand = jest.fn<MainDependencies['executeCommand']>(
+    async () => {},
+  )
+  const registerCommand = jest.fn<MainDependencies['registerCommand']>(() => ({
+    dispose(): void {},
+  }))
+  const registerViewMock = jest.fn()
+  const registerView: MainDependencies['registerView'] = (view) => {
+    registerViewMock(view)
+    return {
+      dispose(): void {},
+    }
+  }
+  const dependencies: MainDependencies = {
+    activateExtensionApi,
+    executeCommand,
+    registerCommand,
+    registerView,
+  }
+
+  await activate(dependencies)
+  await activate(dependencies)
 
   expect(activateExtensionApi).toHaveBeenCalledTimes(1)
-  expect(registerView).toHaveBeenCalledTimes(1)
-  expect(registerView).toHaveBeenCalledWith(view)
+  expect(registerViewMock).toHaveBeenCalledTimes(1)
+  expect(registerViewMock).toHaveBeenCalledWith(view)
   expect(registerCommand).toHaveBeenCalledTimes(1)
   expect(registerCommand).toHaveBeenCalledWith({
     execute: expect.any(Function),
     id: 'todo.show',
   })
 
-  const command = registerCommand.mock.calls[0][0] as {
-    readonly execute: () => Promise<void>
-  }
+  const command = registerCommand.mock.calls[0][0]
   await command.execute()
   expect(executeCommand).toHaveBeenCalledWith(
     'Layout.toggleSideBarView',
