@@ -1,10 +1,12 @@
-import { access, cp, readFile } from 'node:fs/promises'
+import { access, cp, readFile, readdir } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import path, { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { root } from './root.ts'
 
 const extensionId = 'builtin.todo'
+const typeScriptImportRegex =
+  /\b(?:from|import)\s*(?:\(\s*)?['"][^'"]+\.ts['"]/
 
 const assertFileExists = async (file: string): Promise<void> => {
   try {
@@ -89,6 +91,29 @@ const assertStaticTodoExtension = async (commitHash: string): Promise<void> => {
     throw new Error(
       `Expected ${workerPath} to include static web runtime context resolution`,
     )
+  }
+
+  const testDirectory = path.join(
+    commitDir,
+    'packages',
+    'extension-host-worker-tests',
+    'src',
+  )
+  const testFiles = await readdir(testDirectory)
+  await assertFileExists(
+    path.join(testDirectory, '_todo.virtual-dom-view.shared.js'),
+  )
+  for (const testFile of testFiles) {
+    if (!testFile.endsWith('.js')) {
+      continue
+    }
+    const testPath = path.join(testDirectory, testFile)
+    const testContent = await readFile(testPath, 'utf8')
+    if (typeScriptImportRegex.test(testContent)) {
+      throw new Error(
+        `Expected ${testPath} to reference emitted JavaScript modules`,
+      )
+    }
   }
 }
 
