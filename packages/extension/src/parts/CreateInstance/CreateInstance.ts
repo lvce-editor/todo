@@ -31,7 +31,9 @@ const defaultDependencies: TodoInstanceDependencies = {
 const activeInstances = new Set<ActiveTodoViewInstance>()
 
 export const refreshActiveTodoViewInstances = async (): Promise<void> => {
-  await Promise.all(Array.from(activeInstances, async (instance) => instance.refresh()))
+  await Promise.all(
+    Array.from(activeInstances, async (instance) => instance.refresh()),
+  )
 }
 
 export const createInstance = (
