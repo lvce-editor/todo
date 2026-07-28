@@ -5,8 +5,7 @@ import { pathToFileURL } from 'node:url'
 import { root } from './root.ts'
 
 const extensionId = 'builtin.todo'
-const typeScriptImportRegex =
-  /\b(?:from|import)\s*(?:\(\s*)?['"][^'"]+\.ts['"]/
+const typeScriptImportRegex = /\b(?:from|import)\s*(?:\(\s*)?['"][^'"]+\.ts['"]/
 
 const assertFileExists = async (file: string): Promise<void> => {
   try {
