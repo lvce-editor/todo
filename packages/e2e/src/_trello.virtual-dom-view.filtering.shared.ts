@@ -65,22 +65,28 @@ export const showFilteringBoard = async ({
       'board-1': createBoardDetail(boards[0], lists),
     }),
   )
-  await connectWithCredentials({ expect, Locator })
-  await openBoard(Locator, expect)
+  await connectWithCredentials({ Command, expect, Locator })
+  await openBoard(Command, Locator, expect)
 }
 
 export const openBoardFilter = async ({
+  Command,
   expect,
   Locator,
-}: Readonly<Pick<TestApi, 'expect' | 'Locator'>>): Promise<void> => {
+}: Readonly<
+  Pick<TestApi, 'Command' | 'expect' | 'Locator'>
+>): Promise<void> => {
   const openFilter = Locator('button[name="openBoardFilter"]')
   await expect(openFilter).toBeVisible()
-  await expect(openFilter).toHaveText('Filter')
+  await expect(openFilter).toHaveAttribute('aria-expanded', 'false')
+  await expect(openFilter).toHaveAttribute('title', 'Filter cards')
   // eslint-disable-next-line e2e/no-direct-click
   await openFilter.click()
+  await Command.execute('Timeout.sleep', 100)
 
   const popup = Locator('.TrelloBoardFilterPopup')
   const input = Locator('input[name="boardFilter"]')
+  await expect(openFilter).toHaveAttribute('aria-expanded', 'true')
   await expect(popup).toBeVisible()
   await expect(input).toBeFocused()
 }
