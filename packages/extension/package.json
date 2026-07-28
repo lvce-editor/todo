@@ -30,6 +30,9 @@
       "**/test/**"
     ],
     "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
     "coverageThreshold": {
       "global": {
         "branches": 90,

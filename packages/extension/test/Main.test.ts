@@ -1,5 +1,9 @@
 import { expect, jest, test } from '@jest/globals'
-import { activate, type MainDependencies } from '../src/parts/Main/Main.ts'
+import {
+  activate,
+  deactivate,
+  type MainDependencies,
+} from '../src/parts/Main/Main.ts'
 import { view } from '../src/parts/TodoView/TodoView.ts'
 
 test('registers refresh only as a view command', async () => {
@@ -44,4 +48,12 @@ test('registers refresh only as a view command', async () => {
     'Layout.toggleSideBarView',
     'todo.views.todos',
   )
+})
+
+test('exports the extension lifecycle entrypoint', async () => {
+  const extension = await import('../src/todoMain.ts')
+
+  expect(extension.activate).toBe(activate)
+  expect(extension.deactivate).toBe(deactivate)
+  expect(deactivate()).toBeUndefined()
 })
