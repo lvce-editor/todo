@@ -4,128 +4,32 @@ import {
   registerCommand,
   registerView,
 } from '@lvce-editor/api'
-import {
-  createCacheCredentialStorage,
-  testCacheName as testCredentialCacheName,
-} from '../CredentialStorage/CredentialStorage.ts'
-import {
-  createCacheCurrentBoardStorage,
-  testCacheName as testCurrentBoardCacheName,
-} from '../CurrentBoardStorage/CurrentBoardStorage.ts'
-import {
-  createMockTrelloClient,
-  type MockTrelloData,
-} from '../MockTrelloClient/MockTrelloClient.ts'
-import {
-  createCacheRecentBoardStorage,
-  testCacheName as testRecentBoardCacheName,
-} from '../RecentBoardStorage/RecentBoardStorage.ts'
-import { clearTrelloTestCaches } from '../TestStorage/TestStorage.ts'
-import * as TrelloView from '../TrelloView/TrelloView.ts'
+import { viewId } from '../Constants/Constants.ts'
+import { refreshActiveTodoViewInstances } from '../CreateInstance/CreateInstance.ts'
+import * as TodoView from '../TodoView/TodoView.ts'
 
 const state = {
-  isActivated: false,
+  activated: false,
 }
 
 export const activate = async (): Promise<void> => {
-  if (state.isActivated) {
+  if (state.activated) {
     return
   }
-  state.isActivated = true
+  state.activated = true
   await activateExtensionApi()
-  registerView(TrelloView.view)
+  registerView(TodoView.view)
   registerCommand({
     execute() {
-      return executeCommand('Layout.toggleSideBarView', TrelloView.viewId)
+      return executeCommand('Layout.toggleSideBarView', viewId)
     },
-    id: 'trello.show',
-  })
-  registerCommand({
-    execute() {
-      return TrelloView.cancelNewCardActiveTrelloViewInstance()
-    },
-    id: 'trello.cancelNewCard',
+    id: 'todo.show',
   })
   registerCommand({
     execute() {
-      return TrelloView.closeCardDetailActiveTrelloViewInstance()
+      return refreshActiveTodoViewInstances()
     },
-    id: 'trello.closeCardDetail',
-  })
-  registerCommand({
-    execute() {
-      return TrelloView.closeBoardFilterActiveTrelloViewInstance()
-    },
-    id: 'trello.closeBoardFilter',
-  })
-  registerCommand({
-    execute(cardId: string) {
-      return TrelloView.openCardActiveTrelloViewInstance(cardId)
-    },
-    id: 'trello.openCard',
-  })
-  registerCommand({
-    execute() {
-      return TrelloView.saveCardDetailActiveTrelloViewInstance()
-    },
-    id: 'trello.saveCardDetail',
-  })
-  registerCommand({
-    execute(listId: string) {
-      return TrelloView.startAddCardActiveTrelloViewInstance(listId)
-    },
-    id: 'trello.startAddCard',
-  })
-  registerCommand({
-    execute() {
-      return TrelloView.submitNewCardActiveTrelloViewInstance()
-    },
-    id: 'trello.submitNewCard',
-  })
-  registerCommand({
-    execute(options: any) {
-      return TrelloView.addList(options)
-    },
-    id: 'trello.addList',
-  })
-  registerCommand({
-    execute(options: any) {
-      return TrelloView.openMockBoard(options)
-    },
-    id: 'trello.openMockBoard',
-  })
-  registerCommand({
-    execute(options: any) {
-      return TrelloView.addCard(options)
-    },
-    id: 'trello.addCard',
-  })
-  registerCommand({
-    async execute(data: Readonly<MockTrelloData>) {
-      await clearTrelloTestCaches()
-      TrelloView.setTrelloViewDependencyFactory(() => ({
-        client: createMockTrelloClient(data),
-        currentBoardStorage: createCacheCurrentBoardStorage(
-          testCurrentBoardCacheName,
-        ),
-        isTest: true,
-        readCardDetailPopupEnabled:
-          TrelloView.readCardDetailPopupEnabledPreference,
-        recentStorage: createCacheRecentBoardStorage(testRecentBoardCacheName),
-        storage: createCacheCredentialStorage(testCredentialCacheName),
-      }))
-      await TrelloView.reloadActiveTrelloViewInstances()
-      return { ok: true }
-    },
-    id: 'trello.test.useMockData',
-  })
-  registerCommand({
-    async execute() {
-      TrelloView.resetTrelloViewDependencyFactory()
-      await TrelloView.reloadActiveTrelloViewInstances()
-      return { ok: true }
-    },
-    id: 'trello.test.reset',
+    id: 'todo.refresh',
   })
 }
 

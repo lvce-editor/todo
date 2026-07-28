@@ -4,9 +4,9 @@ import path from 'node:path'
 import { root } from './root.ts'
 
 const extension = path.join(root, 'packages', 'extension')
-const entryPoint = path.join(extension, 'src', 'trelloMain.ts')
+const entryPoint = path.join(extension, 'src', 'todoMain.ts')
 const outdir = path.join(extension, 'dist')
-const outfile = path.join(outdir, 'trelloMain.js')
+const outfile = path.join(outdir, 'todoMain.js')
 
 fs.rmSync(outdir, { recursive: true, force: true })
 fs.mkdirSync(outdir, { recursive: true })
