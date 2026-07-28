@@ -28,6 +28,10 @@ const defaultDependencies: TodoInstanceDependencies = {
   scanTodos,
 }
 
+const loadingDelay = 500
+
+const loadingTimeout = Symbol('loadingTimeout')
+
 const activeInstances = new Set<ActiveTodoViewInstance>()
 
 export const refreshActiveTodoViewInstances = async (): Promise<void> => {
@@ -47,13 +51,21 @@ export const createInstance = (
   }
 
   const refresh = async (renderLoading: boolean): Promise<void> => {
-    state.loading = true
     state.error = ''
-    if (renderLoading) {
-      await requestRerender()
-    }
+    const scanPromise = dependencies.scanTodos()
+    let timeoutId: ReturnType<typeof setTimeout> | undefined
     try {
-      const result = await dependencies.scanTodos()
+      if (renderLoading) {
+        const timeoutPromise = new Promise<typeof loadingTimeout>((resolve) => {
+          timeoutId = setTimeout(resolve, loadingDelay, loadingTimeout)
+        })
+        const firstResult = await Promise.race([scanPromise, timeoutPromise])
+        if (firstResult === loadingTimeout) {
+          state.loading = true
+          await requestRerender()
+        }
+      }
+      const result = await scanPromise
       state.scannedFileCount = result.scannedFileCount
       state.todos = result.todos
       state.truncated = result.truncated
@@ -65,6 +77,7 @@ export const createInstance = (
       state.truncated = false
       state.workspace = ''
     } finally {
+      clearTimeout(timeoutId)
       state.loading = false
       await requestRerender()
     }
