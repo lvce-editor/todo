@@ -1,0 +1,120 @@
+.TodoView {
+  box-sizing: border-box;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow: auto;
+  padding: 8px;
+  user-select: text;
+}
+
+.TodoMessage {
+  color: var(--WorkbenchForeground, currentColor);
+  padding: 16px 8px;
+}
+
+.TodoSummary {
+  color: var(--WorkbenchSecondaryForeground, currentColor);
+  font-size: 12px;
+  padding: 4px 8px 8px;
+}
+
+.TodoList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.TodoListItem {
+  margin: 0;
+  min-width: 0;
+}
+
+.TodoItem {
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  color: var(--WorkbenchForeground, currentColor);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  font: inherit;
+  gap: 4px;
+  min-width: 0;
+  padding: 7px 8px;
+  text-align: left;
+  width: 100%;
+}
+
+.TodoItem:hover {
+  background: var(--ListHoverBackground, rgba(127, 127, 127, 0.12));
+}
+
+.TodoItem:focus-visible {
+  outline: 1px solid var(--FocusBorder, currentColor);
+  outline-offset: -1px;
+}
+
+.TodoItemMain,
+.TodoLocation {
+  align-items: baseline;
+  display: flex;
+  min-width: 0;
+}
+
+.TodoItemMain {
+  gap: 8px;
+}
+
+.TodoTag {
+  border-radius: 3px;
+  color: var(--BadgeForeground, currentColor);
+  flex: none;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 1px 5px;
+}
+
+.TodoTagTODO {
+  background: var(--BadgeBackground, #4d4d4d);
+}
+
+.TodoTagFIXME,
+.TodoTagBUG {
+  background: var(--InputValidationErrorBackground, #8b1a1a);
+}
+
+.TodoTagHACK,
+.TodoTagXXX {
+  background: var(--InputValidationWarningBackground, #765c00);
+}
+
+.TodoText,
+.TodoPath {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.TodoText {
+  flex: 1;
+}
+
+.TodoLocation {
+  color: var(--WorkbenchSecondaryForeground, currentColor);
+  font-size: 11px;
+  gap: 8px;
+}
+
+.TodoPath {
+  flex: 1;
+}
+
+.TodoLine {
+  flex: none;
+}
