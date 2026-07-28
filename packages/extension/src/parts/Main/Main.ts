@@ -2,15 +2,18 @@ import {
   activate as activateExtensionApi,
   executeCommand,
   registerCommand,
+  registerFileChangeHandler,
   registerView,
 } from '@lvce-editor/api'
 import { viewId } from '../Constants/Constants.ts'
+import { refreshActiveTodoViewInstances } from '../CreateInstance/CreateInstance.ts'
 import * as TodoView from '../TodoView/TodoView.ts'
 
 export interface MainDependencies {
   readonly activateExtensionApi: typeof activateExtensionApi
   readonly executeCommand: typeof executeCommand
   readonly registerCommand: typeof registerCommand
+  readonly registerFileChangeHandler: typeof registerFileChangeHandler
   readonly registerView: typeof registerView
 }
 
@@ -18,6 +21,7 @@ const defaultDependencies: MainDependencies = {
   activateExtensionApi,
   executeCommand,
   registerCommand,
+  registerFileChangeHandler,
   registerView,
 }
 
@@ -34,6 +38,7 @@ export const activate = async (
   }
   state.activated = true
   await dependencies.activateExtensionApi()
+  dependencies.registerFileChangeHandler(refreshActiveTodoViewInstances)
   dependencies.registerView(TodoView.view)
   dependencies.registerCommand({
     execute() {

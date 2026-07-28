@@ -6,6 +6,7 @@ import {
 } from '@lvce-editor/virtual-dom-worker'
 import {
   createInstance,
+  refreshActiveTodoViewInstances,
   type TodoInstanceDependencies,
 } from '../src/parts/CreateInstance/CreateInstance.ts'
 
@@ -89,6 +90,26 @@ test('loads, renders, refreshes, and opens todos', async () => {
   ])
   expect(requestRerender).toHaveBeenCalled()
   instance.dispose?.()
+})
+
+test('dispose removes the instance from file change refreshes', async () => {
+  const scanTodos = jest.fn(async () => ({
+    scannedFileCount: 0,
+    todos: [],
+    truncated: false,
+    workspace: '/workspace',
+  }))
+  const instance = createInstance(undefined, {
+    openTodo: jest.fn(async () => {}),
+    scanTodos,
+  })
+  await instance.refresh()
+  scanTodos.mockClear()
+
+  instance.dispose?.()
+  await refreshActiveTodoViewInstances()
+
+  expect(scanTodos).not.toHaveBeenCalled()
 })
 
 test('renders scan errors', async () => {
