@@ -1,4 +1,5 @@
 import { expect, jest, test } from '@jest/globals'
+import { refreshActiveTodoViewInstances } from '../src/parts/CreateInstance/CreateInstance.ts'
 import {
   activate,
   deactivate,
@@ -6,7 +7,7 @@ import {
 } from '../src/parts/Main/Main.ts'
 import { view } from '../src/parts/TodoView/TodoView.ts'
 
-test('registers refresh only as a view command', async () => {
+test('registers a file change handler and the view command', async () => {
   const activateExtensionApi = jest.fn<
     MainDependencies['activateExtensionApi']
   >(async () => {})
@@ -14,6 +15,11 @@ test('registers refresh only as a view command', async () => {
     async () => {},
   )
   const registerCommand = jest.fn<MainDependencies['registerCommand']>(() => ({
+    dispose(): void {},
+  }))
+  const registerFileChangeHandler = jest.fn<
+    MainDependencies['registerFileChangeHandler']
+  >(() => ({
     dispose(): void {},
   }))
   const registerViewMock = jest.fn()
@@ -27,6 +33,7 @@ test('registers refresh only as a view command', async () => {
     activateExtensionApi,
     executeCommand,
     registerCommand,
+    registerFileChangeHandler,
     registerView,
   }
 
@@ -36,6 +43,10 @@ test('registers refresh only as a view command', async () => {
   expect(activateExtensionApi).toHaveBeenCalledTimes(1)
   expect(registerViewMock).toHaveBeenCalledTimes(1)
   expect(registerViewMock).toHaveBeenCalledWith(view)
+  expect(registerFileChangeHandler).toHaveBeenCalledTimes(1)
+  expect(registerFileChangeHandler).toHaveBeenCalledWith(
+    refreshActiveTodoViewInstances,
+  )
   expect(registerCommand).toHaveBeenCalledTimes(1)
   expect(registerCommand).toHaveBeenCalledWith({
     execute: expect.any(Function),

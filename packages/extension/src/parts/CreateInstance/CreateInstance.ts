@@ -28,6 +28,12 @@ const defaultDependencies: TodoInstanceDependencies = {
   scanTodos,
 }
 
+const activeInstances = new Set<ActiveTodoViewInstance>()
+
+export const refreshActiveTodoViewInstances = async (): Promise<void> => {
+  await Promise.all(Array.from(activeInstances, async (instance) => instance.refresh()))
+}
+
 export const createInstance = (
   context?: ViewContext,
   dependencies: Readonly<TodoInstanceDependencies> = defaultDependencies,
@@ -63,6 +69,9 @@ export const createInstance = (
   }
 
   const instance: ActiveTodoViewInstance = {
+    dispose(): void {
+      activeInstances.delete(instance)
+    },
     getContext(): Readonly<Record<string, boolean>> {
       return {
         'todo.todosFocus': true,
@@ -99,6 +108,7 @@ export const createInstance = (
       return renderActionsDom()
     },
   }
+  activeInstances.add(instance)
   void refresh(false)
   return instance
 }
