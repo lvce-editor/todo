@@ -27,12 +27,6 @@
     {
       "css": "media/todo.css",
       "displayName": "Todo",
-      "eventListeners": [
-        {
-          "name": "handleClick",
-          "params": ["handleClick", "event.currentTarget.name"]
-        }
-      ],
       "id": "todo.views.todos",
       "title": "Todo",
       "icon": "media/todo.svg",
