@@ -17,7 +17,7 @@ export const test: Test = async (api) => {
   // eslint-disable-next-line e2e/no-direct-click
   await secondItem.click()
 
-  await api.Command.execute('Timeout.sleep', 200)
+  await api.Command.execute('Timeout.sleep', 1000)
   await api.Editor.shouldHaveText(content)
   await api.Editor.shouldHaveSelections(new Uint32Array([1, 3, 1, 3]))
 }
