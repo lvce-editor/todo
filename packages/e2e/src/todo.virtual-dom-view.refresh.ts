@@ -14,6 +14,7 @@ export const test: Test = async (api) => {
   await api.Main.openUri(`${tmpDir}/main.ts`)
   await api.Editor.type('// TODO refreshed item')
   await api.Main.save()
+  await api.Command.execute('Timeout.sleep', 1000)
 
   const item = api.Locator('.TodoItem')
   await api.expect(item).toBeVisible()
